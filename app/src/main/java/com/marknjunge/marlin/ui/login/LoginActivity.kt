@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.marknjunge.marlin.App
 import com.marknjunge.marlin.R
-import com.marknjunge.marlin.data.Config
 import com.marknjunge.marlin.data.models.Resource
 import com.marknjunge.marlin.data.models.Status
 import com.marknjunge.marlin.data.models.User
@@ -23,6 +22,7 @@ import kotlinx.android.synthetic.main.activity_login.*
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var viewModel: LoginViewModel
+    private val digitalOceanConfig by lazy { App.digitalOceanConfig }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +69,7 @@ class LoginActivity : AppCompatActivity() {
 
         btnLogin.setOnClickListener {
             // Open the browser at allow the user to login
-            val url = "https://cloud.digitalocean.com/v1/oauth/authorize?client_id=${Config.clientId}&redirect_uri=${Config.redirectUrl}&response_type=code&scope=read"
+            val url = "https://cloud.digitalocean.com/v1/oauth/authorize?client_id=${digitalOceanConfig.clientId}&redirect_uri=${digitalOceanConfig.redirectUrl}&response_type=code&scope=read"
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(intent)
         }

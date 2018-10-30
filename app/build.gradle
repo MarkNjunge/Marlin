@@ -6,6 +6,11 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'kotlin-kapt'
 
+// A properties file is located at projectFolder/keys.properties
+def keysPropertiesFile = rootProject.file("keys.properties")
+def keys = new Properties()
+keys.load(new FileInputStream(keysPropertiesFile))
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -15,6 +20,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "digitalOceanClientId", keys['digitalOcean_clientId'])
+        buildConfigField("String", "digitalOceanClientSecret", keys['digitalOcean_clientSecret'])
     }
     buildTypes {
         release {

@@ -30,9 +30,7 @@ class App : Application() {
         apiService = networkProvider.apiService
         oauthService = networkProvider.oauthService
 
-        val clientId = "c4fb47ac4b8cf02f20c3b9dc7e31790d8eea30022f1dbc791d2588e8c2e3e76b"
-        val clientSecret = "4fb7ca2d3b303c1a46e79b4a7b533aba7460bc868308903ebfbac20f5833e520"
         val redirectUrl = "https://marlin"
-        digitalOceanConfig = DigitalOceanConfigImpl(clientId, clientSecret, redirectUrl)
+        digitalOceanConfig = DigitalOceanConfigImpl(BuildConfig.digitalOceanClientId, BuildConfig.digitalOceanClientSecret, redirectUrl)
     }
 }

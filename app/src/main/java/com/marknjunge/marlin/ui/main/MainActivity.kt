@@ -4,23 +4,33 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import com.marknjunge.marlin.App
 import com.marknjunge.marlin.R
+import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.models.AccessToken
 import com.marknjunge.marlin.data.models.User
+import com.marknjunge.marlin.data.network.ApiService
+import com.marknjunge.marlin.data.network.OauthService
 import com.marknjunge.marlin.ui.login.LoginActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.closestKodein
+import org.kodein.di.generic.instance
 import timber.log.Timber
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), KodeinAware {
+    override val kodein by closestKodein()
+    private val prefs: PreferencesStorage by instance()
+    private val oauthService: OauthService by instance()
+    private val apiService: ApiService by instance()
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val accessToken = App.preferencesStorage.accessToken
+        val accessToken = prefs.accessToken
 
         if (accessToken == null) {
             Timber.d("No access token")
@@ -44,8 +54,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshToken() {
-        App.preferencesStorage.accessToken?.let { accessToken ->
-            val disposable = App.oauthService.refreshToken(accessToken.refreshToken)
+        prefs.accessToken?.let { accessToken ->
+            val disposable = oauthService.refreshToken(accessToken.refreshToken)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
@@ -57,8 +67,8 @@ class MainActivity : AppCompatActivity() {
                                     val newToken = AccessToken(tokenResponse.accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, expires)
                                     val user = User(info.name, info.email, info.uuid)
 
-                                    App.preferencesStorage.user = user
-                                    App.preferencesStorage.accessToken = newToken
+                                    prefs.user = user
+                                    prefs.accessToken = newToken
                                 }
                             },
                             onError = { throwable ->
@@ -69,14 +79,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun revokeToken() {
-        App.preferencesStorage.accessToken?.let { accessToken ->
-            val disposable = App.oauthService.revokeToken("Bearer ${accessToken.accessToken}", accessToken.accessToken)
+        prefs.accessToken?.let { accessToken ->
+            val disposable = oauthService.revokeToken("Bearer ${accessToken.accessToken}", accessToken.accessToken)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
                             onSuccess = {
-                                App.preferencesStorage.user = null
-                                App.preferencesStorage.accessToken = null
+                                prefs.user = null
+                                prefs.accessToken = null
 
                                 startActivity(Intent(this@MainActivity, LoginActivity::class.java))
                                 finish()
@@ -89,9 +99,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getAccount() {
-        App.preferencesStorage.accessToken?.let { accessToken ->
+        prefs.accessToken?.let { accessToken ->
 
-            App.apiService.getAccount("Bearer ${accessToken.accessToken}")
+            apiService.getAccount("Bearer ${accessToken.accessToken}")
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(

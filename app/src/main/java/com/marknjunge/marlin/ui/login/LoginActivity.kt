@@ -10,19 +10,27 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.marknjunge.marlin.App
 import com.marknjunge.marlin.R
+import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.models.Resource
 import com.marknjunge.marlin.data.models.Status
 import com.marknjunge.marlin.data.models.User
+import com.marknjunge.marlin.data.network.DigitalOceanConfig
+import com.marknjunge.marlin.data.network.OauthService
 import timber.log.Timber
 import com.marknjunge.marlin.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_login.*
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.closestKodein
+import org.kodein.di.generic.instance
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(), KodeinAware {
+    override val kodein by closestKodein()
+    private val prefs: PreferencesStorage by instance()
+    private val oauthService: OauthService by instance()
+    private val digitalOceanConfig: DigitalOceanConfig by instance()
 
     private lateinit var viewModel: LoginViewModel
-    private val digitalOceanConfig by lazy { App.digitalOceanConfig }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +39,7 @@ class LoginActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
-                return LoginViewModel(App.oauthService, App.preferencesStorage, App.digitalOceanConfig) as T
+                return LoginViewModel(oauthService, prefs, digitalOceanConfig) as T
             }
         }).get(LoginViewModel::class.java)
 

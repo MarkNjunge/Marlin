@@ -9,7 +9,6 @@ import com.squareup.moshi.Moshi
 interface PreferencesStorage{
     var accessToken: AccessToken?
     var user: User?
-    var code: String?
 }
 
 class PreferencesStorageImpl(context: Context):PreferencesStorage {
@@ -20,7 +19,6 @@ class PreferencesStorageImpl(context: Context):PreferencesStorage {
 
     private val ACCESS_TOKEN_KEY = "access_token_key"
     private val USER_KEY = "user"
-    private val CODE_KEY = "code"
 
     override var accessToken: AccessToken?
         set(value) {
@@ -62,17 +60,4 @@ class PreferencesStorageImpl(context: Context):PreferencesStorage {
                 userAdapter.fromJson(json)
             }
         }
-
-    override var code: String?
-        set(value) {
-            if (value == null) {
-                sharedPreferences.edit().remove(CODE_KEY).apply()
-            } else {
-                sharedPreferences.edit()
-                        .putString(CODE_KEY, value)
-                        .apply()
-            }
-
-        }
-        get() = sharedPreferences.getString(CODE_KEY, null)
 }

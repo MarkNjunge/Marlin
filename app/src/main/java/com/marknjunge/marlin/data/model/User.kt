@@ -1,4 +1,4 @@
-package com.marknjunge.marlin.data.models
+package com.marknjunge.marlin.data.model
 
 data class User(
         val name: String,

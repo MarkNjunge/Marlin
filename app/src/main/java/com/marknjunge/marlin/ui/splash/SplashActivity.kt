@@ -5,9 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.marknjunge.marlin.data.local.PreferencesStorage
-import com.marknjunge.marlin.data.models.AccessToken
-import com.marknjunge.marlin.data.models.User
-import com.marknjunge.marlin.data.network.OauthService
+import com.marknjunge.marlin.data.model.AccessToken
+import com.marknjunge.marlin.data.model.User
+import com.marknjunge.marlin.data.api.service.OauthService
 import com.marknjunge.marlin.ui.login.LoginActivity
 import com.marknjunge.marlin.ui.main.MainActivity
 import com.marknjunge.marlin.utils.DateTime

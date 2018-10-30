@@ -2,8 +2,8 @@ package com.marknjunge.marlin.data.local
 
 import android.content.Context
 import android.preference.PreferenceManager
-import com.marknjunge.marlin.data.models.AccessToken
-import com.marknjunge.marlin.data.models.User
+import com.marknjunge.marlin.data.model.AccessToken
+import com.marknjunge.marlin.data.model.User
 import com.squareup.moshi.Moshi
 
 interface PreferencesStorage{

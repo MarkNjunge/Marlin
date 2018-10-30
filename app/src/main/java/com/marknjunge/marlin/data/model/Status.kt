@@ -1,4 +1,4 @@
-package com.marknjunge.marlin.data.models
+package com.marknjunge.marlin.data.model
 
 enum class Status {
     SUCCESS,

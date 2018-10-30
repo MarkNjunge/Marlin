@@ -1,7 +1,7 @@
-package com.marknjunge.marlin.data.network
+package com.marknjunge.marlin.data.api.service
 
-import com.marknjunge.marlin.data.models.RevokeResponse
-import com.marknjunge.marlin.data.models.TokenResponse
+import com.marknjunge.marlin.data.model.RevokeResponse
+import com.marknjunge.marlin.data.model.TokenResponse
 import io.reactivex.Single
 import retrofit2.http.Header
 import retrofit2.http.POST

@@ -1,6 +1,6 @@
-package com.marknjunge.marlin.data.network
+package com.marknjunge.marlin.data.api.service
 
-import com.marknjunge.marlin.data.models.AccountResponse
+import com.marknjunge.marlin.data.model.AccountResponse
 import io.reactivex.Single
 import retrofit2.http.*
 

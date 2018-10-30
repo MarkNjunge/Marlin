@@ -1,4 +1,4 @@
-package com.marknjunge.marlin.data.network
+package com.marknjunge.marlin.data.api
 
 interface DigitalOceanConfig{
     val clientId:String

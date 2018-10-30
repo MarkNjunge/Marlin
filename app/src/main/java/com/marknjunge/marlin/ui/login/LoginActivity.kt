@@ -12,11 +12,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.marknjunge.marlin.R
 import com.marknjunge.marlin.data.local.PreferencesStorage
-import com.marknjunge.marlin.data.models.Resource
-import com.marknjunge.marlin.data.models.Status
-import com.marknjunge.marlin.data.models.User
-import com.marknjunge.marlin.data.network.DigitalOceanConfig
-import com.marknjunge.marlin.data.network.OauthService
+import com.marknjunge.marlin.data.model.Resource
+import com.marknjunge.marlin.data.model.Status
+import com.marknjunge.marlin.data.model.User
+import com.marknjunge.marlin.data.api.DigitalOceanConfig
+import com.marknjunge.marlin.data.api.service.OauthService
 import timber.log.Timber
 import com.marknjunge.marlin.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_login.*

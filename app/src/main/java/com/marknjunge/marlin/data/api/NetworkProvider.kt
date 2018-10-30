@@ -1,5 +1,7 @@
-package com.marknjunge.marlin.data.network
+package com.marknjunge.marlin.data.api
 
+import com.marknjunge.marlin.data.api.service.ApiService
+import com.marknjunge.marlin.data.api.service.OauthService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory

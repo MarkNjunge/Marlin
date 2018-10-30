@@ -6,10 +6,10 @@ import android.os.Bundle
 import android.widget.Toast
 import com.marknjunge.marlin.R
 import com.marknjunge.marlin.data.local.PreferencesStorage
-import com.marknjunge.marlin.data.models.AccessToken
-import com.marknjunge.marlin.data.models.User
-import com.marknjunge.marlin.data.network.ApiService
-import com.marknjunge.marlin.data.network.OauthService
+import com.marknjunge.marlin.data.model.AccessToken
+import com.marknjunge.marlin.data.model.User
+import com.marknjunge.marlin.data.api.service.ApiService
+import com.marknjunge.marlin.data.api.service.OauthService
 import com.marknjunge.marlin.ui.login.LoginActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy

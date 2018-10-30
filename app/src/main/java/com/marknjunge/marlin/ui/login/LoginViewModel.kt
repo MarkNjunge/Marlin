@@ -2,11 +2,11 @@ package com.marknjunge.marlin.ui.login
 
 import androidx.lifecycle.*
 import com.marknjunge.marlin.data.local.PreferencesStorage
-import com.marknjunge.marlin.data.models.AccessToken
-import com.marknjunge.marlin.data.models.Resource
-import com.marknjunge.marlin.data.models.User
-import com.marknjunge.marlin.data.network.DigitalOceanConfig
-import com.marknjunge.marlin.data.network.OauthService
+import com.marknjunge.marlin.data.model.AccessToken
+import com.marknjunge.marlin.data.model.Resource
+import com.marknjunge.marlin.data.model.User
+import com.marknjunge.marlin.data.api.DigitalOceanConfig
+import com.marknjunge.marlin.data.api.service.OauthService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy

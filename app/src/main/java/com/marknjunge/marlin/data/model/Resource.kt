@@ -1,4 +1,4 @@
-package com.marknjunge.marlin.data.models
+package com.marknjunge.marlin.data.model
 
 data class Resource<out T>(val status: Status, val data: T?, val errorMessage: String?) {
     companion object {

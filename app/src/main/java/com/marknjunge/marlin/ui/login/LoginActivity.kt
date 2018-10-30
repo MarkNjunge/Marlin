@@ -67,24 +67,6 @@ class LoginActivity : AppCompatActivity() {
             }
         })
 
-        // TODO Move this to a splash activity
-        App.preferencesStorage.run {
-            // If the user is not null, they already logged in, take them to the main activity
-            if (user != null) {
-                Timber.d("User already logged in")
-                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                finish()
-            }
-
-            // If the user is null and there is a code, then the user authorized the app in the browser
-            // but getting the access token did not complete
-            if (code != null) {
-                Timber.d("User authorized the app but cancelled before getting a token")
-                viewModel.getToken(code!!)
-                enterLoadingState()
-            }
-        }
-
         btnLogin.setOnClickListener {
             // Open the browser at allow the user to login
             val url = "https://cloud.digitalocean.com/v1/oauth/authorize?client_id=${Config.clientId}&redirect_uri=${Config.redirectUrl}&response_type=code&scope=read"

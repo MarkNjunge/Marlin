@@ -13,6 +13,7 @@ import com.marknjunge.marlin.data.model.User
 import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.api.service.OauthService
 import com.marknjunge.marlin.ui.account.AccountActivity
+import com.marknjunge.marlin.ui.droplets.DropletsActivity
 import com.marknjunge.marlin.ui.login.LoginActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        supportActionBar?.title = "Droplets"
 
         val accessToken = prefs.accessToken
 
@@ -53,6 +55,10 @@ class MainActivity : AppCompatActivity(), KodeinAware {
 
         btnTest.setOnClickListener {
             getAccount()
+        }
+
+        btnDroplets.setOnClickListener {
+            startActivity(Intent(this, DropletsActivity::class.java))
         }
     }
 

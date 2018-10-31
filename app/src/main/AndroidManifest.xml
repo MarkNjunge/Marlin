@@ -42,10 +42,14 @@
         <activity
             android:name=".ui.account.AccountActivity"
             android:parentActivityName=".ui.main.MainActivity" />
+        <activity
+            android:name=".ui.droplets.DropletsActivity"
+            android:parentActivityName=".ui.main.MainActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
 
     </application>
 

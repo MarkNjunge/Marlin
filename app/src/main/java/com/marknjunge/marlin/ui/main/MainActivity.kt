@@ -3,6 +3,8 @@ package com.marknjunge.marlin.ui.main
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import com.marknjunge.marlin.R
 import com.marknjunge.marlin.data.local.PreferencesStorage
@@ -10,6 +12,7 @@ import com.marknjunge.marlin.data.model.AccessToken
 import com.marknjunge.marlin.data.model.User
 import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.api.service.OauthService
+import com.marknjunge.marlin.ui.account.AccountActivity
 import com.marknjunge.marlin.ui.login.LoginActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -25,7 +28,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     private val prefs: PreferencesStorage by instance()
     private val oauthService: OauthService by instance()
     private val apiService: ApiService by instance()
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -51,6 +54,19 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         btnTest.setOnClickListener {
             getAccount()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.actionbar_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_account -> startActivity(Intent(this@MainActivity, AccountActivity::class.java))
+            R.id.menu_settings -> Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun refreshToken() {

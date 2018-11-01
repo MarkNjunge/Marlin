@@ -16,7 +16,7 @@ data class Droplet(
         val backupIds: List<Int>,
 
         @field:Json(name = "kernel")
-        val kernel: Kernel,
+        val kernel: Kernel?,
 
         @field:Json(name = "created_at")
         val createdAt: String,

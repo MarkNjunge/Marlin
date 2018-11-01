@@ -26,8 +26,15 @@
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
-    <style name="AppTheme.TextPrimary">
+    <style name="AppTheme.TextHeader">
         <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:alpha">.87</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTheme.TextPrimary">
+        <item name="android:textSize">14sp</item>
         <item name="android:textColor">#000000</item>
         <item name="android:alpha">.87</item>
         <item name="android:textStyle">bold</item>
@@ -36,24 +43,24 @@
     <style name="AppTheme.TextSecondary">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">#000000</item>
-        <item name="android:alpha">.87</item>
+        <item name="android:alpha">.54</item>
     </style>
 
     <style name="AppTheme.TextMuted">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">#000000</item>
-        <item name="android:alpha">.54</item>
+        <item name="android:alpha">.12</item>
     </style>
 
     <style name="AppTheme.PrimaryButton">
-        <item name="android:backgroundTint">@color/colorAccent</item>
+        <item name="android:backgroundTint">@color/colorPrimary</item>
         <item name="android:textColor">#FFFFFF</item>
         <item name="android:layout_height">56dp</item>
     </style>
 
     <style name="AppTheme.SecondaryButton">
-        <item name="android:backgroundTint">#FFFFFF</item>
-        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:backgroundTint">@color/colorAccent</item>
+        <item name="android:textColor">#FFFFFF</item>
         <item name="android:layout_height">56dp</item>
     </style>
 

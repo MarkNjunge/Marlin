@@ -27,17 +27,14 @@ class AccountActivity : AppCompatActivity(), KodeinAware {
     private val apiService: ApiService by instance()
     private val prefs: PreferencesStorage by instance()
 
+    private val viewModel by lazy {
+        AccountViewModel(apiService, prefs)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account)
         supportActionBar?.title = "Account"
-
-        val viewModel = ViewModelProviders.of(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return AccountViewModel(apiService, prefs) as T
-            }
-        }).get(AccountViewModel::class.java)
 
         viewModel.account.observe(this, Observer<Resource<Account>> { accountResource ->
             when {

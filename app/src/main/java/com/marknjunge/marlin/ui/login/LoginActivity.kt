@@ -30,18 +30,11 @@ class LoginActivity : AppCompatActivity(), KodeinAware {
     private val oauthService: OauthService by instance()
     private val digitalOceanConfig: DigitalOceanConfig by instance()
 
-    private lateinit var viewModel: LoginViewModel
+    private val viewModel by lazy { LoginViewModel(oauthService, prefs, digitalOceanConfig) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
-        viewModel = ViewModelProviders.of(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return LoginViewModel(oauthService, prefs, digitalOceanConfig) as T
-            }
-        }).get(LoginViewModel::class.java)
 
         viewModel.user.observe(this, Observer<Resource<User>> { userResource ->
             when {

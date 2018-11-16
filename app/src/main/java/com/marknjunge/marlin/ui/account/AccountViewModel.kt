@@ -23,34 +23,37 @@ class AccountViewModel(private val apiService: ApiService, private val prefs: Pr
     }
 
     fun getAccount() {
-        prefs.accessToken?.let { accessToken ->
-            val disposable = apiService.getAccount("Bearer ${accessToken.accessToken}")
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe {
-                        account.value = Resource.loading()
-                    }
-                    .subscribeBy(
-                            onSuccess = { accountResponse ->
-                                account.value = Resource.success(accountResponse.account)
-                            },
-                            onError = { throwable ->
-                                when (throwable) {
-                                    is HttpException -> {
-                                        val errorString = throwable.response().errorBody()!!.string()
-                                        Timber.e(errorString)
-                                        account.value = Resource.error(errorString)
-                                    }
-                                    else -> {
-                                        Timber.e(throwable)
-                                        account.value = Resource.error(throwable.localizedMessage)
-                                    }
-                                }
-
-                            }
-                    )
-
-            compositeDisposable.add(disposable)
+        if (prefs.accessToken == null) {
+            account.value = Resource.error("Access token is null")
+            return
         }
+
+        val disposable = apiService.getAccount("Bearer ${prefs.accessToken!!.accessToken}")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe {
+                    account.value = Resource.loading()
+                }
+                .subscribeBy(
+                        onSuccess = { accountResponse ->
+                            account.value = Resource.success(accountResponse.account)
+                        },
+                        onError = { throwable ->
+                            when (throwable) {
+                                is HttpException -> {
+                                    val errorString = throwable.response().errorBody()!!.string()
+                                    Timber.e(errorString)
+                                    account.value = Resource.error(errorString)
+                                }
+                                else -> {
+                                    Timber.e(throwable)
+                                    account.value = Resource.error(throwable.localizedMessage)
+                                }
+                            }
+
+                        }
+                )
+
+        compositeDisposable.add(disposable)
     }
 }

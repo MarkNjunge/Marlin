@@ -17,6 +17,7 @@ import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.Droplet
 import com.marknjunge.marlin.data.model.Resource
 import com.marknjunge.marlin.data.model.Status
+import com.marknjunge.marlin.utils.getViewModel
 import kotlinx.android.synthetic.main.activity_droplet_activity.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
@@ -26,6 +27,12 @@ class DropletsActivity : AppCompatActivity(), KodeinAware {
     override val kodein by closestKodein()
     private val apiService: ApiService by instance()
     private val prefs: PreferencesStorage by instance()
+
+    private val viewModel by lazy {
+        getViewModel {
+            DropletsViewModel(apiService, prefs)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,15 +45,7 @@ class DropletsActivity : AppCompatActivity(), KodeinAware {
         }
         rvDroplets.adapter = adapter
 
-        val viewModel = ViewModelProviders.of(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return DropletsViewModel(apiService, prefs) as T
-            }
-        }).get(DropletsViewModel::class.java)
-
-        val dropletsLiveData = viewModel.getDroplets()
-        dropletsLiveData.observe(this, Observer<Resource<List<Droplet>>> { dropletResource ->
+        viewModel.droplets.observe(this, Observer<Resource<List<Droplet>>> { dropletResource ->
             when {
                 dropletResource.status == Status.LOADING -> {
                     pbLoading.visibility = View.VISIBLE
@@ -62,6 +61,6 @@ class DropletsActivity : AppCompatActivity(), KodeinAware {
             }
         })
 
-
+        viewModel.getDroplets()
     }
 }

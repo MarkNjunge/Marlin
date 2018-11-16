@@ -14,7 +14,7 @@ import retrofit2.HttpException
 import timber.log.Timber
 
 class DropletsViewModel(private val apiService: ApiService, private val prefs: PreferencesStorage) : ViewModel() {
-    private lateinit var droplets: MutableLiveData<Resource<List<Droplet>>>
+    val droplets: MutableLiveData<Resource<List<Droplet>>> = MutableLiveData()
     private val compositeDisposable = CompositeDisposable()
 
     override fun onCleared() {
@@ -22,16 +22,7 @@ class DropletsViewModel(private val apiService: ApiService, private val prefs: P
         compositeDisposable.clear()
     }
 
-    fun getDroplets(): MutableLiveData<Resource<List<Droplet>>> {
-        if (!::droplets.isInitialized) {
-            droplets = MutableLiveData()
-            getDropletsFromApi()
-        }
-
-        return droplets
-    }
-
-    private fun getDropletsFromApi() {
+    fun getDroplets() {
         val disposable = apiService.getAllDroplets("Bearer ${prefs.accessToken!!.accessToken}")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

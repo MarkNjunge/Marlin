@@ -8,12 +8,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.bumptech.glide.Glide
 import com.marknjunge.marlin.R
 import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.Account
 import com.marknjunge.marlin.data.model.Resource
 import com.marknjunge.marlin.data.model.Status
+import com.marknjunge.marlin.utils.Gravatar
 import kotlinx.android.synthetic.main.activity_account.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
@@ -52,6 +54,9 @@ class AccountActivity : AppCompatActivity(), KodeinAware {
                         tvEmail.text = email
                         tvDropletLimit.text = dropletLimit.toString()
                         tvFloatingIpLimit.text = floatingIpLimit.toString()
+
+                        val avatarUrl = Gravatar.generateAvatarUrl(email)
+                        Glide.with(this@AccountActivity).load(avatarUrl).into(imgAvatar)
                     }
                 }
                 accountResource.status == Status.ERROR -> {

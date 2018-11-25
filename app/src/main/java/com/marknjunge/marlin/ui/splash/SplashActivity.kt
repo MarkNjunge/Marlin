@@ -39,7 +39,7 @@ class SplashActivity : AppCompatActivity(), KodeinAware {
 
         // Check if the token has expired. If it has, refresh it
         prefs.accessToken?.let {
-            if (DateTime.now.timestamp >= it.expires) {
+            if (it.canExpire && DateTime.now.timestamp >= it.expires) {
                 Timber.d("Token has expired")
 
                 // Get a refresh token
@@ -51,7 +51,7 @@ class SplashActivity : AppCompatActivity(), KodeinAware {
                                     // Save the new details on the device
                                     tokenResponse.run {
                                         val expires = System.currentTimeMillis() / 1000 + expiresIn
-                                        val newToken = AccessToken(accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, expires)
+                                        val newToken = AccessToken(accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, true, expires)
                                         prefs.accessToken = newToken
                                     }
 

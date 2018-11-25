@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">Marlin</string>
     <string name="app_icon_content_description">App icon</string>
-    <string name="login">Login</string>
     <string name="logout">Logout</string>
     <string name="refresh">Refresh</string>
     <string name="test">Test</string>
+    <string name="login_with_oauth">Login with oAuth</string>
+    <string name="login_with_personal_access_token">Login with Personal Access Token</string>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -12,6 +13,7 @@ import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.Resource
 import com.marknjunge.marlin.data.model.Status
 import com.marknjunge.marlin.data.api.DigitalOceanConfig
+import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.api.service.OauthService
 import com.marknjunge.marlin.data.model.AccessToken
 import timber.log.Timber
@@ -25,9 +27,10 @@ class LoginActivity : AppCompatActivity(), KodeinAware {
     override val kodein by closestKodein()
     private val prefs: PreferencesStorage by instance()
     private val oauthService: OauthService by instance()
+    private val apiService: ApiService by instance()
     private val digitalOceanConfig: DigitalOceanConfig by instance()
 
-    private val viewModel by lazy { LoginViewModel(oauthService, prefs, digitalOceanConfig) }
+    private val viewModel by lazy { LoginViewModel(oauthService, apiService, prefs, digitalOceanConfig) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,19 +62,25 @@ class LoginActivity : AppCompatActivity(), KodeinAware {
                     // If an error was returned, display the message
                     userResource.errorMessage?.let { errorMessage ->
                         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
-
-                        btnLogin.visibility = View.GONE
-                        pbLoading.visibility = View.VISIBLE
                     }
                 }
             }
         })
 
-        btnLogin.setOnClickListener {
+        btnLoginOauth.setOnClickListener {
             // Open the browser at allow the user to login
             val url = "https://cloud.digitalocean.com/v1/oauth/authorize?client_id=${digitalOceanConfig.clientId}&redirect_uri=${digitalOceanConfig.redirectUrl}&response_type=code&scope=read"
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(intent)
+        }
+
+        val tokenLoginDialog = TokenLoginDialog()
+        btnLoginToken.setOnClickListener {
+            tokenLoginDialog.onSelected = { token, canWrite ->
+                Timber.d("$token, $canWrite")
+                viewModel.savePersonalToken(token, canWrite)
+            }
+            tokenLoginDialog.show(supportFragmentManager, "token-login")
         }
     }
 
@@ -87,12 +96,17 @@ class LoginActivity : AppCompatActivity(), KodeinAware {
     }
 
     private fun enterLoadingState() {
-        btnLogin.visibility = View.GONE
+        btnLoginOauth.visibility = View.GONE
+        btnLoginToken.visibility = View.GONE
         pbLoading.visibility = View.VISIBLE
     }
 
     private fun exitLoadingState() {
-        btnLogin.visibility = View.VISIBLE
+        // Works
+        btnLoginToken.visibility = View.VISIBLE
+
+        // Used to work but doesn't anymore
+        btnLoginOauth.visibility = View.VISIBLE
         pbLoading.visibility = View.GONE
     }
 }

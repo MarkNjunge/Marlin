@@ -7,5 +7,6 @@ data class AccessToken(
         val createdAt: Int,
         val tokenType: String,
         val expiresIn: Int,
+        val canExpire: Boolean,
         val expires: Long
 )

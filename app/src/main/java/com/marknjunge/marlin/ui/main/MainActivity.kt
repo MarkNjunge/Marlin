@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                                 Timber.d(tokenResponse.toString())
                                 tokenResponse.run {
                                     val expires = System.currentTimeMillis() / 1000 + expiresIn
-                                    val newToken = AccessToken(tokenResponse.accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, expires)
+                                    val newToken = AccessToken(tokenResponse.accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, true, expires)
 
                                     prefs.accessToken = newToken
                                 }

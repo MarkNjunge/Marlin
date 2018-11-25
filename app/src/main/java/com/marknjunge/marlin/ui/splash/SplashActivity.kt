@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.widget.Toast
 import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.AccessToken
-import com.marknjunge.marlin.data.model.User
 import com.marknjunge.marlin.data.api.service.OauthService
 import com.marknjunge.marlin.ui.login.LoginActivity
 import com.marknjunge.marlin.ui.main.MainActivity
@@ -53,9 +52,6 @@ class SplashActivity : AppCompatActivity(), KodeinAware {
                                     tokenResponse.run {
                                         val expires = System.currentTimeMillis() / 1000 + expiresIn
                                         val newToken = AccessToken(accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, expires)
-                                        val user = User(info.name, info.email, info.uuid)
-
-                                        prefs.user = user
                                         prefs.accessToken = newToken
                                     }
 

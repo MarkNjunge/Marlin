@@ -17,18 +17,6 @@
         tools:src="@tools:sample/avatars" />
 
     <TextView
-        android:id="@+id/tvName"
-        style="@style/AppTheme.TextPrimary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/tvEmail"
-        app:layout_constraintStart_toEndOf="@+id/imgAvatar"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
-        tools:text="Mark Njung'e" />
-
-    <TextView
         android:id="@+id/tvEmail"
         style="@style/AppTheme.TextPrimary"
         android:layout_width="wrap_content"
@@ -36,7 +24,7 @@
         android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/imgAvatar"
         app:layout_constraintStart_toEndOf="@+id/imgAvatar"
-        app:layout_constraintTop_toBottomOf="@+id/tvName"
+        app:layout_constraintTop_toTopOf="@+id/imgAvatar"
         tools:text="mark.kamau@outlook.com" />
 
     <TextView

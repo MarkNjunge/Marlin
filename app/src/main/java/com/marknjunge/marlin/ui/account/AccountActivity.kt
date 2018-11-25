@@ -47,7 +47,6 @@ class AccountActivity : AppCompatActivity(), KodeinAware {
                     pbLoading.visibility = View.GONE
 
                     accountResource.data?.run {
-                        tvName.text = prefs.user!!.name
                         tvEmail.text = email
                         tvDropletLimit.text = dropletLimit.toString()
                         tvFloatingIpLimit.text = floatingIpLimit.toString()

@@ -7,16 +7,13 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.marknjunge.marlin.R
 import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.Resource
 import com.marknjunge.marlin.data.model.Status
-import com.marknjunge.marlin.data.model.User
 import com.marknjunge.marlin.data.api.DigitalOceanConfig
 import com.marknjunge.marlin.data.api.service.OauthService
+import com.marknjunge.marlin.data.model.AccessToken
 import timber.log.Timber
 import com.marknjunge.marlin.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_login.*
@@ -36,7 +33,9 @@ class LoginActivity : AppCompatActivity(), KodeinAware {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        viewModel.user.observe(this, Observer<Resource<User>> { userResource ->
+        // TODO Allow login using Personal Access Token https://www.digitalocean.com/docs/api/create-personal-access-token/
+
+        viewModel.login.observe(this, Observer<Resource<AccessToken>> { userResource ->
             when {
                 userResource.status == Status.LOADING -> {
                     Timber.d("Loading user")
@@ -47,8 +46,8 @@ class LoginActivity : AppCompatActivity(), KodeinAware {
                     exitLoadingState()
 
                     // If a user object was returned, take the user to the main activity
-                    userResource.data?.let { user ->
-                        Toast.makeText(this, "Logged in as ${user.name}", Toast.LENGTH_SHORT).show()
+                    userResource.data?.let {
+                        Toast.makeText(this, "Logged in!", Toast.LENGTH_SHORT).show()
                         startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                         finish()
                     }

@@ -9,7 +9,6 @@ import android.widget.Toast
 import com.marknjunge.marlin.R
 import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.AccessToken
-import com.marknjunge.marlin.data.model.User
 import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.api.service.OauthService
 import com.marknjunge.marlin.ui.account.AccountActivity
@@ -87,9 +86,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                                 tokenResponse.run {
                                     val expires = System.currentTimeMillis() / 1000 + expiresIn
                                     val newToken = AccessToken(tokenResponse.accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, expires)
-                                    val user = User(info.name, info.email, info.uuid)
 
-                                    prefs.user = user
                                     prefs.accessToken = newToken
                                 }
                             },
@@ -107,7 +104,6 @@ class MainActivity : AppCompatActivity(), KodeinAware {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
                             onSuccess = {
-                                prefs.user = null
                                 prefs.accessToken = null
 
                                 startActivity(Intent(this@MainActivity, LoginActivity::class.java))

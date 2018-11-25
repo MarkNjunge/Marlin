@@ -4,7 +4,6 @@ import androidx.lifecycle.*
 import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.AccessToken
 import com.marknjunge.marlin.data.model.Resource
-import com.marknjunge.marlin.data.model.User
 import com.marknjunge.marlin.data.api.DigitalOceanConfig
 import com.marknjunge.marlin.data.api.service.OauthService
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -18,7 +17,7 @@ class LoginViewModel(private val oauthService: OauthService,
                      private val digitalOceanConfig: DigitalOceanConfig)
     : ViewModel() {
 
-    val user: MutableLiveData<Resource<User>> = MutableLiveData()
+    val login: MutableLiveData<Resource<AccessToken>> = MutableLiveData()
     private val compositeDisposable = CompositeDisposable()
 
     override fun onCleared() {
@@ -31,7 +30,7 @@ class LoginViewModel(private val oauthService: OauthService,
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
-                    user.value = Resource.loading()
+                    login.value = Resource.loading()
                 }
                 .subscribeBy(
                         onSuccess = { tokenResponse ->
@@ -39,17 +38,14 @@ class LoginViewModel(private val oauthService: OauthService,
                                 val expires = System.currentTimeMillis() / 1000 + expiresIn
 
                                 val accessToken = AccessToken(accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, expires)
-                                val u = User(info.name, info.email, info.uuid)
-
-                                preferencesStorage.user = u
                                 preferencesStorage.accessToken = accessToken
 
-                                user.value = Resource.success(u)
+                                login.value = Resource.success(accessToken)
                             }
                         },
                         onError = { throwable ->
                             Timber.e(throwable)
-                            user.value = Resource.error(throwable.localizedMessage)
+                            login.value = Resource.error(throwable.localizedMessage)
                         }
                 )
 

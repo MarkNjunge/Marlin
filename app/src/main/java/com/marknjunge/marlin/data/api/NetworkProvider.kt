@@ -1,10 +1,10 @@
 package com.marknjunge.marlin.data.api
 
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.api.service.OauthService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 class NetworkProvider {
@@ -19,7 +19,7 @@ class NetworkProvider {
 
         val oauthRetrofit = Retrofit.Builder()
                 .addConverterFactory(MoshiConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .client(okHttpClient)
                 .baseUrl(oAuthUrl)
                 .build()
@@ -28,7 +28,7 @@ class NetworkProvider {
 
         val apiRetrofit = Retrofit.Builder()
                 .addConverterFactory(MoshiConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .client(okHttpClient)
                 .baseUrl(apiUrl)
                 .build()

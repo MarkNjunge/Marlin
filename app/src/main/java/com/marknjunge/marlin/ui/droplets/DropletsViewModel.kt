@@ -6,50 +6,47 @@ import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.Droplet
 import com.marknjunge.marlin.data.model.Resource
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import timber.log.Timber
+import java.lang.Exception
 
 class DropletsViewModel(private val apiService: ApiService, private val prefs: PreferencesStorage) : ViewModel() {
     val droplets: MutableLiveData<Resource<List<Droplet>>> = MutableLiveData()
-    private val compositeDisposable = CompositeDisposable()
+
+    private val viewmodelJob = Job()
+    private val uiScope = CoroutineScope(Dispatchers.Main + viewmodelJob)
 
     override fun onCleared() {
         super.onCleared()
-        compositeDisposable.clear()
+        viewmodelJob.cancel()
     }
 
     fun getDroplets() {
-        val disposable = apiService.getAllDroplets("Bearer ${prefs.accessToken!!.accessToken}")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                    droplets.value = Resource.loading()
+        uiScope.launch {
+            try {
+                droplets.value = Resource.loading()
+                val dropletResponse = apiService.getAllDroplets("Bearer ${prefs.accessToken!!.accessToken}").await()
+                Timber.d("Returned ${dropletResponse.droplets.size} droplets")
+                droplets.value = Resource.success(dropletResponse.droplets)
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        val errorString = e.response().errorBody()!!.string()
+                        Timber.e(errorString)
+                        droplets.value = Resource.error(errorString)
+                    }
+                    else -> {
+                        Timber.e(e)
+                        droplets.value = Resource.error(e.localizedMessage)
+                    }
                 }
-                .subscribeBy(
-                        onSuccess = { dropletResponse ->
-                            Timber.d("Returned ${dropletResponse.droplets.size} droplets")
-                            droplets.value = Resource.success(dropletResponse.droplets)
-                        },
-                        onError = { throwable ->
-                            when (throwable) {
-                                is HttpException -> {
-                                    val errorString = throwable.response().errorBody()!!.string()
-                                    Timber.e(errorString)
-                                    droplets.value = Resource.error(errorString)
-                                }
-                                else -> {
-                                    Timber.e(throwable)
-                                    droplets.value = Resource.error(throwable.localizedMessage)
-                                }
-                            }
-                        }
+            }
 
-                )
+        }
 
-        compositeDisposable.add(disposable)
     }
 }

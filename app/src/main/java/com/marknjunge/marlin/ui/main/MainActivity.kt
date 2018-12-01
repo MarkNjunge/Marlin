@@ -14,20 +14,24 @@ import com.marknjunge.marlin.data.api.service.OauthService
 import com.marknjunge.marlin.ui.account.AccountActivity
 import com.marknjunge.marlin.ui.droplets.DropletsActivity
 import com.marknjunge.marlin.ui.login.LoginActivity
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 import org.kodein.di.generic.instance
 import timber.log.Timber
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), KodeinAware {
     override val kodein by closestKodein()
     private val prefs: PreferencesStorage by instance()
     private val oauthService: OauthService by instance()
     private val apiService: ApiService by instance()
+
+    private val uiScope = CoroutineScope(Dispatchers.Main)
+    private val ioScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,61 +80,52 @@ class MainActivity : AppCompatActivity(), KodeinAware {
 
     private fun refreshToken() {
         prefs.accessToken?.let { accessToken ->
-            val disposable = oauthService.refreshToken(accessToken.refreshToken)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy(
-                            onSuccess = { tokenResponse ->
-                                Toast.makeText(this@MainActivity, "Logged in!", Toast.LENGTH_SHORT).show()
-                                Timber.d(tokenResponse.toString())
-                                tokenResponse.run {
-                                    val expires = System.currentTimeMillis() / 1000 + expiresIn
-                                    val newToken = AccessToken(tokenResponse.accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, true, expires)
+            uiScope.launch {
+                try {
+                    val tokenResponse = oauthService.refreshToken(accessToken.refreshToken).await()
+                    Toast.makeText(this@MainActivity, "Token refreshed", Toast.LENGTH_SHORT).show()
+                    Timber.d(tokenResponse.toString())
+                    tokenResponse.run {
+                        val expires = System.currentTimeMillis() / 1000 + expiresIn
+                        val newToken = AccessToken(tokenResponse.accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, true, expires)
 
-                                    prefs.accessToken = newToken
-                                }
-                            },
-                            onError = { throwable ->
-                                Timber.e(throwable)
-                            }
-                    )
+                        prefs.accessToken = newToken
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e)
+                }
+            }
         }
     }
 
     private fun revokeToken() {
         prefs.accessToken?.let { accessToken ->
-            val disposable = oauthService.revokeToken("Bearer ${accessToken.accessToken}", accessToken.accessToken)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy(
-                            onSuccess = {
-                                prefs.accessToken = null
-
-                                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                                finish()
-                            },
-                            onError = { throwable ->
-                                Timber.e(throwable)
-                            }
-                    )
+            // If the token can expire, revoke it
+            if (accessToken.canExpire) {
+                ioScope.launch {
+                    oauthService.revokeToken("Bearer ${accessToken.accessToken}", accessToken.accessToken).await()
+                    Timber.i("Token revoked")
+                    prefs.accessToken = null
+                }
+            } else {
+                prefs.accessToken = null
+            }
+            startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+            finish()
         }
     }
 
     private fun getAccount() {
         prefs.accessToken?.let { accessToken ->
-
-            apiService.getAccount("Bearer ${accessToken.accessToken}")
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy(
-                            onSuccess = {
-                                tvEmail.text = "Token valid"
-                            },
-                            onError = { throwable ->
-                                Timber.e(throwable)
-                                tvEmail.text = "Error: ${throwable.localizedMessage}"
-                            }
-                    )
+            uiScope.launch {
+                try {
+                    apiService.getAccount("Bearer ${accessToken.accessToken}").await()
+                    tvEmail.text = "Token valid"
+                } catch (e: Exception) {
+                    Timber.e(e)
+                    tvEmail.text = "Error: ${e.localizedMessage}"
+                }
+            }
         }
     }
 }

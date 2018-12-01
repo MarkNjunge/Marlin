@@ -10,21 +10,23 @@ import com.marknjunge.marlin.data.api.service.OauthService
 import com.marknjunge.marlin.ui.login.LoginActivity
 import com.marknjunge.marlin.ui.main.MainActivity
 import com.marknjunge.marlin.utils.DateTime
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 import org.kodein.di.generic.instance
 import timber.log.Timber
+import java.lang.Exception
 
 class SplashActivity : AppCompatActivity(), KodeinAware {
     override val kodein by closestKodein()
     private val prefs: PreferencesStorage by instance()
     private val oauthService: OauthService by instance()
 
-    private val compositeDisposable = CompositeDisposable()
+    private val job = Job()
+    private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,32 +44,28 @@ class SplashActivity : AppCompatActivity(), KodeinAware {
             if (it.canExpire && DateTime.now.timestamp >= it.expires) {
                 Timber.d("Token has expired")
 
-                // Get a refresh token
-                val disposable = oauthService.refreshToken(it.refreshToken)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeBy(
-                                onSuccess = { tokenResponse ->
-                                    // Save the new details on the device
-                                    tokenResponse.run {
-                                        val expires = System.currentTimeMillis() / 1000 + expiresIn
-                                        val newToken = AccessToken(accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, true, expires)
-                                        prefs.accessToken = newToken
-                                    }
+                uiScope.launch {
+                    try {
 
-                                    // Go to MainActivity
-                                    Toast.makeText(this@SplashActivity, "Logged in!", Toast.LENGTH_SHORT).show()
-                                    startActivity(Intent(this@SplashActivity, MainActivity::class.java))
-                                    finish()
-                                },
-                                onError = { throwable ->
-                                    Timber.e(throwable)
-                                    Toast.makeText(this, throwable.localizedMessage, Toast.LENGTH_SHORT).show()
-                                    finish()
-                                }
-                        )
+                        // Get a refresh token
+                        val tokenResponse = oauthService.refreshToken(it.refreshToken).await()
+                        // Save the new details on the device
+                        tokenResponse.run {
+                            val expires = System.currentTimeMillis() / 1000 + expiresIn
+                            val newToken = AccessToken(accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, true, expires)
+                            prefs.accessToken = newToken
+                        }
 
-                compositeDisposable.add(disposable)
+                        // Go to MainActivity
+                        Toast.makeText(this@SplashActivity, "Logged in!", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+                        finish()
+                    } catch (e: Exception) {
+                        Timber.e(e)
+                        Toast.makeText(this@SplashActivity, e.localizedMessage, Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                }
 
                 return
             }
@@ -81,6 +79,6 @@ class SplashActivity : AppCompatActivity(), KodeinAware {
 
     override fun onStop() {
         super.onStop()
-        compositeDisposable.clear()
+        job.cancel()
     }
 }

@@ -6,20 +6,22 @@ import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.Account
 import com.marknjunge.marlin.data.model.Resource
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import timber.log.Timber
 
 class AccountViewModel(private val apiService: ApiService, private val prefs: PreferencesStorage) : ViewModel() {
     val account: MutableLiveData<Resource<Account>> = MutableLiveData()
-    private val compositeDisposable = CompositeDisposable()
+
+    private val viewmodelJob = Job()
+    private val uiScope = CoroutineScope(Dispatchers.Main + viewmodelJob)
 
     override fun onCleared() {
         super.onCleared()
-        compositeDisposable.clear()
+        viewmodelJob.cancel()
     }
 
     fun getAccount() {
@@ -28,32 +30,16 @@ class AccountViewModel(private val apiService: ApiService, private val prefs: Pr
             return
         }
 
-        val disposable = apiService.getAccount("Bearer ${prefs.accessToken!!.accessToken}")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                    account.value = Resource.loading()
-                }
-                .subscribeBy(
-                        onSuccess = { accountResponse ->
-                            account.value = Resource.success(accountResponse.account)
-                        },
-                        onError = { throwable ->
-                            when (throwable) {
-                                is HttpException -> {
-                                    val errorString = throwable.response().errorBody()!!.string()
-                                    Timber.e(errorString)
-                                    account.value = Resource.error(errorString)
-                                }
-                                else -> {
-                                    Timber.e(throwable)
-                                    account.value = Resource.error(throwable.localizedMessage)
-                                }
-                            }
-
-                        }
-                )
-
-        compositeDisposable.add(disposable)
+        uiScope.launch {
+            try {
+                account.value = Resource.loading()
+                val accountResponse = apiService.getAccount("Bearer ${prefs.accessToken!!.accessToken}").await()
+                account.value = Resource.success(accountResponse.account)
+            } catch (e: HttpException) {
+                val errorString = e.response().errorBody()!!.string()
+                Timber.e(errorString)
+                account.value = Resource.error(errorString)
+            }
+        }
     }
 }

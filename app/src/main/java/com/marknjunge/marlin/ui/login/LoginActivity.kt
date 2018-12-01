@@ -36,8 +36,6 @@ class LoginActivity : AppCompatActivity(), KodeinAware {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // TODO Allow login using Personal Access Token https://www.digitalocean.com/docs/api/create-personal-access-token/
-
         viewModel.login.observe(this, Observer<Resource<AccessToken>> { userResource ->
             when {
                 userResource.status == Status.LOADING -> {
@@ -102,10 +100,8 @@ class LoginActivity : AppCompatActivity(), KodeinAware {
     }
 
     private fun exitLoadingState() {
-        // Works
         btnLoginToken.visibility = View.VISIBLE
 
-        // Used to work but doesn't anymore
         btnLoginOauth.visibility = View.VISIBLE
         pbLoading.visibility = View.GONE
     }

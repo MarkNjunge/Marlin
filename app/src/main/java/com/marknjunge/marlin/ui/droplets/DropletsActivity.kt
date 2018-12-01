@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.marknjunge.marlin.R
+import com.marknjunge.marlin.data.CoroutineDispatcherProvider
 import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.Droplet
@@ -27,10 +28,11 @@ class DropletsActivity : AppCompatActivity(), KodeinAware {
     override val kodein by closestKodein()
     private val apiService: ApiService by instance()
     private val prefs: PreferencesStorage by instance()
+    private val dispatcherProvider: CoroutineDispatcherProvider by instance()
 
     private val viewModel by lazy {
         getViewModel {
-            DropletsViewModel(apiService, prefs)
+            DropletsViewModel(apiService, prefs, dispatcherProvider)
         }
     }
 

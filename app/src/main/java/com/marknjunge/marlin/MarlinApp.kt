@@ -1,11 +1,13 @@
 package com.marknjunge.marlin
 
 import android.app.Application
+import com.marknjunge.marlin.data.CoroutineDispatcherProvider
 import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.local.PreferencesStorageImpl
 import com.marknjunge.marlin.data.api.*
 import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.api.service.OauthService
+import kotlinx.coroutines.Dispatchers
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.bind
@@ -24,6 +26,7 @@ class MarlinApp : Application(), KodeinAware {
         bind<DigitalOceanConfig>() with singleton {
             DigitalOceanConfigImpl(BuildConfig.digitalOceanClientId, BuildConfig.digitalOceanClientSecret, "https://marlin")
         }
+        bind<CoroutineDispatcherProvider>() with singleton { CoroutineDispatcherProvider(Dispatchers.Main, Dispatchers.IO) }
     }
 
     override fun onCreate() {

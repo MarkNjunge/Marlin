@@ -2,23 +2,23 @@ package com.marknjunge.marlin.ui.droplets
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.marknjunge.marlin.data.CoroutineDispatcherProvider
 import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.Droplet
 import com.marknjunge.marlin.data.model.Resource
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import timber.log.Timber
 import java.lang.Exception
 
-class DropletsViewModel(private val apiService: ApiService, private val prefs: PreferencesStorage) : ViewModel() {
+class DropletsViewModel(private val apiService: ApiService, private val prefs: PreferencesStorage, dispatcherProvider:CoroutineDispatcherProvider) : ViewModel() {
     val droplets: MutableLiveData<Resource<List<Droplet>>> = MutableLiveData()
 
     private val viewmodelJob = Job()
-    private val uiScope = CoroutineScope(Dispatchers.Main + viewmodelJob)
+    private val uiScope = CoroutineScope(dispatcherProvider.main + viewmodelJob)
 
     override fun onCleared() {
         super.onCleared()

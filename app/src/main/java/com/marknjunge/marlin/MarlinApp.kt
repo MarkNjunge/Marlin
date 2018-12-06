@@ -24,7 +24,7 @@ class MarlinApp : Application(), KodeinAware {
     override val kodein = Kodein.lazy {
         bind<PreferencesStorage>() with singleton { PreferencesStorageImpl(this@MarlinApp) }
         bind<DigitalOceanConfig>() with singleton {
-            DigitalOceanConfigImpl(BuildConfig.digitalOceanClientId, BuildConfig.digitalOceanClientSecret, "https://marlin")
+            DigitalOceanConfig(BuildConfig.digitalOceanClientId, BuildConfig.digitalOceanClientSecret, "https://marlin")
         }
         bind<CoroutineDispatcherProvider>() with singleton { CoroutineDispatcherProvider(Dispatchers.Main, Dispatchers.IO) }
         bind<DataRepository>() with singleton { DataRepositoryImpl(networkProvider.apiService, instance()) }

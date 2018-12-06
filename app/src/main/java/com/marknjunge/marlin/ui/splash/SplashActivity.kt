@@ -5,8 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.marknjunge.marlin.data.local.PreferencesStorage
-import com.marknjunge.marlin.data.model.AccessToken
-import com.marknjunge.marlin.data.api.service.OauthService
+import com.marknjunge.marlin.data.repository.AuthRepository
 import com.marknjunge.marlin.ui.login.LoginActivity
 import com.marknjunge.marlin.ui.main.MainActivity
 import com.marknjunge.marlin.utils.DateTime
@@ -23,7 +22,7 @@ import java.lang.Exception
 class SplashActivity : AppCompatActivity(), KodeinAware {
     override val kodein by closestKodein()
     private val prefs: PreferencesStorage by instance()
-    private val oauthService: OauthService by instance()
+    private val authRepo: AuthRepository by instance()
 
     private val job = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
@@ -47,14 +46,7 @@ class SplashActivity : AppCompatActivity(), KodeinAware {
                 uiScope.launch {
                     try {
 
-                        // Get a refresh token
-                        val tokenResponse = oauthService.refreshToken(it.refreshToken).await()
-                        // Save the new details on the device
-                        tokenResponse.run {
-                            val expires = System.currentTimeMillis() / 1000 + expiresIn
-                            val newToken = AccessToken(accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, true, expires)
-                            prefs.accessToken = newToken
-                        }
+                        authRepo.refreshToken()
 
                         // Go to MainActivity
                         Toast.makeText(this@SplashActivity, "Logged in!", Toast.LENGTH_SHORT).show()

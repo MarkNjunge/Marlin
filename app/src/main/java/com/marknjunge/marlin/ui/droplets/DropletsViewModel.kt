@@ -3,10 +3,9 @@ package com.marknjunge.marlin.ui.droplets
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.marknjunge.marlin.data.CoroutineDispatcherProvider
-import com.marknjunge.marlin.data.api.service.ApiService
-import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.Droplet
 import com.marknjunge.marlin.data.model.Resource
+import com.marknjunge.marlin.data.repository.DataRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -14,7 +13,7 @@ import retrofit2.HttpException
 import timber.log.Timber
 import java.lang.Exception
 
-class DropletsViewModel(private val apiService: ApiService, private val prefs: PreferencesStorage, dispatcherProvider:CoroutineDispatcherProvider) : ViewModel() {
+class DropletsViewModel(private val repository: DataRepository, dispatcherProvider:CoroutineDispatcherProvider) : ViewModel() {
     val droplets: MutableLiveData<Resource<List<Droplet>>> = MutableLiveData()
 
     private val viewmodelJob = Job()
@@ -29,7 +28,7 @@ class DropletsViewModel(private val apiService: ApiService, private val prefs: P
         uiScope.launch {
             try {
                 droplets.value = Resource.loading()
-                val dropletResponse = apiService.getAllDroplets("Bearer ${prefs.accessToken!!.accessToken}").await()
+                val dropletResponse = repository.getAllDroplets()
                 Timber.d("Returned ${dropletResponse.droplets.size} droplets")
                 droplets.value = Resource.success(dropletResponse.droplets)
             } catch (e: Exception) {

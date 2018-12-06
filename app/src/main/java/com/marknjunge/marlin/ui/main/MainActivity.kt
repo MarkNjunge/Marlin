@@ -11,6 +11,8 @@ import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.AccessToken
 import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.api.service.OauthService
+import com.marknjunge.marlin.data.repository.AuthRepository
+import com.marknjunge.marlin.data.repository.DataRepository
 import com.marknjunge.marlin.ui.account.AccountActivity
 import com.marknjunge.marlin.ui.droplets.DropletsActivity
 import com.marknjunge.marlin.ui.login.LoginActivity
@@ -27,8 +29,8 @@ import java.lang.Exception
 class MainActivity : AppCompatActivity(), KodeinAware {
     override val kodein by closestKodein()
     private val prefs: PreferencesStorage by instance()
-    private val oauthService: OauthService by instance()
-    private val apiService: ApiService by instance()
+    private val dataRepo: DataRepository by instance()
+    private val authRepo: AuthRepository by instance()
 
     private val uiScope = CoroutineScope(Dispatchers.Main)
     private val ioScope = CoroutineScope(Dispatchers.IO)
@@ -79,52 +81,34 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     }
 
     private fun refreshToken() {
-        prefs.accessToken?.let { accessToken ->
-            uiScope.launch {
-                try {
-                    val tokenResponse = oauthService.refreshToken(accessToken.refreshToken).await()
-                    Toast.makeText(this@MainActivity, "Token refreshed", Toast.LENGTH_SHORT).show()
-                    Timber.d(tokenResponse.toString())
-                    tokenResponse.run {
-                        val expires = System.currentTimeMillis() / 1000 + expiresIn
-                        val newToken = AccessToken(tokenResponse.accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, true, expires)
-
-                        prefs.accessToken = newToken
-                    }
-                } catch (e: Exception) {
-                    Timber.e(e)
-                }
+        uiScope.launch {
+            try {
+                authRepo.refreshToken()
+                Toast.makeText(this@MainActivity, "Token refreshed", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Timber.e(e)
             }
         }
     }
 
     private fun revokeToken() {
-        prefs.accessToken?.let { accessToken ->
-            // If the token can expire, revoke it
-            if (accessToken.canExpire) {
-                ioScope.launch {
-                    oauthService.revokeToken("Bearer ${accessToken.accessToken}", accessToken.accessToken).await()
-                    Timber.i("Token revoked")
-                    prefs.accessToken = null
-                }
-            } else {
-                prefs.accessToken = null
-            }
-            startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-            finish()
+        ioScope.launch {
+            authRepo.revokeToken()
+            Timber.i("Token revoked")
         }
+
+        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+        finish()
     }
 
     private fun getAccount() {
-        prefs.accessToken?.let { accessToken ->
-            uiScope.launch {
-                try {
-                    apiService.getAccount("Bearer ${accessToken.accessToken}").await()
-                    tvEmail.text = "Token valid"
-                } catch (e: Exception) {
-                    Timber.e(e)
-                    tvEmail.text = "Error: ${e.localizedMessage}"
-                }
+        uiScope.launch {
+            try {
+                dataRepo.getAccount()
+                tvEmail.text = "Token valid"
+            } catch (e: Exception) {
+                Timber.e(e)
+                tvEmail.text = "Error: ${e.localizedMessage}"
             }
         }
     }

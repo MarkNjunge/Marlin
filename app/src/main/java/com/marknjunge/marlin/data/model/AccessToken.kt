@@ -7,6 +7,6 @@ data class AccessToken(
         val createdAt: Int,
         val tokenType: String,
         val expiresIn: Int,
-        val canExpire: Boolean,
+        val canExpire: Boolean, // Personal access tokens don't expire
         val expires: Long
 )

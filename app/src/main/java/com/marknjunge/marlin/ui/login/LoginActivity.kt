@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -13,9 +12,10 @@ import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.Resource
 import com.marknjunge.marlin.data.model.Status
 import com.marknjunge.marlin.data.api.DigitalOceanConfig
-import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.api.service.OauthService
 import com.marknjunge.marlin.data.model.AccessToken
+import com.marknjunge.marlin.data.repository.AuthRepository
+import com.marknjunge.marlin.data.repository.DataRepository
 import timber.log.Timber
 import com.marknjunge.marlin.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_login.*
@@ -25,12 +25,10 @@ import org.kodein.di.generic.instance
 
 class LoginActivity : AppCompatActivity(), KodeinAware {
     override val kodein by closestKodein()
-    private val prefs: PreferencesStorage by instance()
-    private val oauthService: OauthService by instance()
-    private val apiService: ApiService by instance()
+    private val authRepo: AuthRepository by instance()
     private val digitalOceanConfig: DigitalOceanConfig by instance()
 
-    private val viewModel by lazy { LoginViewModel(oauthService, apiService, prefs, digitalOceanConfig) }
+    private val viewModel by lazy { LoginViewModel(authRepo) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

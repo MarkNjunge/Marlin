@@ -8,6 +8,8 @@ import com.marknjunge.marlin.data.model.AccessToken
 import com.marknjunge.marlin.data.model.Droplet
 import com.marknjunge.marlin.data.model.DropletResponse
 import com.marknjunge.marlin.data.model.Resource
+import com.marknjunge.marlin.data.repository.DataRepository
+import com.marknjunge.marlin.data.repository.DataRepositoryImpl
 import com.marknjunge.marlin.testUtils.mock
 import com.marknjunge.marlin.testUtils.provideFakeDispatchers
 import kotlinx.coroutines.*
@@ -26,8 +28,9 @@ class DropletsViewModelTest {
 
     private val apiService = Mockito.mock(ApiService::class.java)
     private val preferencesStorage = Mockito.mock(PreferencesStorage::class.java)
+    private val dataRepo = DataRepositoryImpl(apiService, preferencesStorage)
     private val dispatcherProvider = provideFakeDispatchers()
-    private val viewModel = DropletsViewModel(apiService, preferencesStorage, dispatcherProvider)
+    private val viewModel = DropletsViewModel(dataRepo, dispatcherProvider)
 
     @Test
     fun sendDropletsToUI() {
@@ -65,7 +68,7 @@ class DropletsViewModelTest {
         Mockito.`when`(apiService.getAllDroplets(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString())).thenReturn(deferred)
     }
 
-    private fun whenGetAccessToken(){
+    private fun whenGetAccessToken() {
         val accessToken = AccessToken("", "", "", 0, "", 0, false, 0)
         Mockito.`when`(preferencesStorage.accessToken).thenReturn(accessToken)
     }

@@ -2,10 +2,9 @@ package com.marknjunge.marlin.ui.account
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.marknjunge.marlin.data.api.service.ApiService
-import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.Account
 import com.marknjunge.marlin.data.model.Resource
+import com.marknjunge.marlin.data.repository.DataRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -13,7 +12,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import timber.log.Timber
 
-class AccountViewModel(private val apiService: ApiService, private val prefs: PreferencesStorage) : ViewModel() {
+class AccountViewModel(private val repository: DataRepository) : ViewModel() {
     val account: MutableLiveData<Resource<Account>> = MutableLiveData()
 
     private val viewmodelJob = Job()
@@ -25,15 +24,10 @@ class AccountViewModel(private val apiService: ApiService, private val prefs: Pr
     }
 
     fun getAccount() {
-        if (prefs.accessToken == null) {
-            account.value = Resource.error("Access token is null")
-            return
-        }
-
         uiScope.launch {
             try {
                 account.value = Resource.loading()
-                val accountResponse = apiService.getAccount("Bearer ${prefs.accessToken!!.accessToken}").await()
+                val accountResponse = repository.getAccount()
                 account.value = Resource.success(accountResponse.account)
             } catch (e: HttpException) {
                 val errorString = e.response().errorBody()!!.string()

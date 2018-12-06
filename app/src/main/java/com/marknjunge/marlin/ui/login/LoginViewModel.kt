@@ -1,13 +1,10 @@
 package com.marknjunge.marlin.ui.login
 
 import androidx.lifecycle.*
-import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.AccessToken
 import com.marknjunge.marlin.data.model.Resource
-import com.marknjunge.marlin.data.api.DigitalOceanConfig
-import com.marknjunge.marlin.data.api.service.ApiService
-import com.marknjunge.marlin.data.api.service.OauthService
 import com.marknjunge.marlin.data.model.DigitalOceanError
+import com.marknjunge.marlin.data.repository.AuthRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,11 +12,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import timber.log.Timber
 
-class LoginViewModel(private val oauthService: OauthService,
-                     private val apiService: ApiService,
-                     private val preferencesStorage: PreferencesStorage,
-                     private val digitalOceanConfig: DigitalOceanConfig)
-    : ViewModel() {
+class LoginViewModel(private val authRepo: AuthRepository): ViewModel() {
 
     val login: MutableLiveData<Resource<AccessToken>> = MutableLiveData()
 
@@ -36,15 +29,9 @@ class LoginViewModel(private val oauthService: OauthService,
             try {
                 login.value = Resource.loading()
 
-                val tokenResponse = oauthService.getToken(code, digitalOceanConfig.clientId, digitalOceanConfig.clientSecret, digitalOceanConfig.redirectUrl).await()
-                tokenResponse.run {
-                    val expires = System.currentTimeMillis() / 1000 + expiresIn
+                val accessToken = authRepo.getToken(code)
 
-                    val accessToken = AccessToken(accessToken, refreshToken, scope, createdAt, tokenType, expiresIn, true, expires)
-                    preferencesStorage.accessToken = accessToken
-
-                    login.value = Resource.success(accessToken)
-                }
+                login.value = Resource.success(accessToken)
             } catch (e: Exception) {
                 Timber.e(e)
                 login.value = Resource.error(e.localizedMessage)
@@ -57,10 +44,7 @@ class LoginViewModel(private val oauthService: OauthService,
             try {
                 login.value = Resource.loading()
 
-                apiService.getAccount("Bearer $token").await()
-                val scope = if (canWrite) "read,write" else "read"
-                val accessToken = AccessToken(token, "", scope, 0, "bearer", 0, false, 0)
-                preferencesStorage.accessToken = accessToken
+                val accessToken = authRepo.savePersonalToken(token, canWrite)
 
                 login.value = Resource.success(accessToken)
             } catch (e: Exception) {

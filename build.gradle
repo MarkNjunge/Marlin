@@ -24,7 +24,8 @@ buildscript {
             'mockito' : '2.23.0',
             'testCore' : '1.0.0',
             'testRunner' : '1.1.0',
-            'espressoCore' : '3.1.0'
+            'espressoCore' : '3.1.0',
+            'leakCanary': '1.6.2'
     ]
 
     ext.deps = [
@@ -67,7 +68,8 @@ buildscript {
             'test' : [
                     'junit' : "junit:junit:${versions.junit}",
                     'mockito': "org.mockito:mockito-core:${versions.mockito}"
-            ]
+            ],
+            'leakCanary': "com.squareup.leakcanary:leakcanary-android:${versions.leakCanary}"
     ]
 
     repositories {

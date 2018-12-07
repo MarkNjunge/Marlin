@@ -9,6 +9,7 @@ import com.marknjunge.marlin.data.repository.AuthRepository
 import com.marknjunge.marlin.data.repository.AuthRepositoryImpl
 import com.marknjunge.marlin.data.repository.DataRepositoryImpl
 import com.marknjunge.marlin.data.repository.DataRepository
+import com.squareup.leakcanary.LeakCanary
 import kotlinx.coroutines.Dispatchers
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -33,6 +34,8 @@ class MarlinApp : Application(), KodeinAware {
 
     override fun onCreate() {
         super.onCreate()
+
+        LeakCanary.install(this)
 
         Timber.plant(object : Timber.DebugTree() {
             override fun createStackElementTag(element: StackTraceElement): String {

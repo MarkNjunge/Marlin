@@ -62,7 +62,7 @@ dependencies {
     implementation deps.moshi
     implementation deps.timber
     implementation deps.circleimageview
-    implementation deps.leakCanary
+    debugImplementation deps.leakCanary
 
     testImplementation deps.test.junit
     testImplementation deps.test.mockito

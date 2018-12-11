@@ -1,38 +1,27 @@
 package com.marknjunge.marlin.data.local
 
 import android.content.Context
-import android.preference.PreferenceManager
 import com.marknjunge.marlin.data.model.AccessToken
-import com.squareup.moshi.Moshi
+import com.orhanobut.hawk.Hawk
 
-interface PreferencesStorage{
+interface PreferencesStorage {
     var accessToken: AccessToken?
 }
 
-class PreferencesStorageImpl(context: Context):PreferencesStorage {
-    private val sharedPreferences by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
-    private val moshi = Moshi.Builder().build()
-    private val accessTokenAdapter by lazy { moshi.adapter(AccessToken::class.java) }
+class PreferencesStorageImpl(context: Context) : PreferencesStorage {
+    init {
+        Hawk.init(context).build()
+    }
 
     private val ACCESS_TOKEN_KEY = "access_token_key"
 
     override var accessToken: AccessToken?
         set(value) {
-            val json = if (value == null) {
-                ""
+            if (value == null) {
+                Hawk.delete(ACCESS_TOKEN_KEY)
             } else {
-                accessTokenAdapter.toJson(value)
-            }
-            sharedPreferences.edit()
-                    .putString(ACCESS_TOKEN_KEY, json)
-                    .apply()
-        }
-        get() {
-            val json = sharedPreferences.getString(ACCESS_TOKEN_KEY, "")
-            return if (json == "") {
-                null
-            } else {
-                accessTokenAdapter.fromJson(json)
+                Hawk.put(ACCESS_TOKEN_KEY, value)
             }
         }
+        get() = Hawk.get(ACCESS_TOKEN_KEY)
 }

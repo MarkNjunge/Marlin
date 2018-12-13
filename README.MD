@@ -1,7 +1,9 @@
 ![Art](/art/logo.png)
 # Marlin
 
-An Android client for DigitalOcean.
+An Android client for DigitalOcean.  
+
+The project is a work in progress.
 
 ## Running the code.
 

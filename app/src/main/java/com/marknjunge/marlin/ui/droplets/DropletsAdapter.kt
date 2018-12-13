@@ -1,16 +1,19 @@
 package com.marknjunge.marlin.ui.droplets
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.marknjunge.marlin.R
 import com.marknjunge.marlin.data.model.Droplet
+import com.marknjunge.marlin.utils.updatePadding
 import kotlinx.android.synthetic.main.item_droplet.view.*
 import java.util.*
 
-class DropletsAdapter(private val onClick: (Droplet) -> Unit) : RecyclerView.Adapter<DropletsAdapter.ViewHolder>() {
+class DropletsAdapter(private val context: Context, private val onClick: (Droplet) -> Unit) : RecyclerView.Adapter<DropletsAdapter.ViewHolder>() {
     private var data: List<Droplet> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -22,7 +25,7 @@ class DropletsAdapter(private val onClick: (Droplet) -> Unit) : RecyclerView.Ada
     override fun getItemCount() = data.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(data[position], onClick)
+        holder.bind(context, data[position], onClick)
     }
 
     fun setItems(data: List<Droplet>) {
@@ -32,13 +35,21 @@ class DropletsAdapter(private val onClick: (Droplet) -> Unit) : RecyclerView.Ada
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         @SuppressLint("SetTextI18n")
-        fun bind(droplet: Droplet, onClick: (Droplet) -> Unit) {
+        fun bind(context: Context, droplet: Droplet, onClick: (Droplet) -> Unit) {
             itemView.run {
+                if (droplet.status == "off") {
+                    imgDropletStatus.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.droplet_off))
+                }
+
                 tvName.text = droplet.name
                 tvIpAddress.text = droplet.networks.v4[0].ipAddress
-                tvvCPUs.text = "${droplet.vcpus} vCPUs"
-                tvDisk.text = "${droplet.disk} GB"
-                tvTags.text = droplet.tags.toString().replace("[", "").replace("]", "")
+
+                val tags = droplet.tags.toString().replace("[", "").replace("]", "")
+                tvTags.text = tags
+                if (tvTags.text.isEmpty()) {
+                    tvTags.visibility = View.GONE
+                    tvName.updatePadding(bottom = 8)
+                }
 
                 rootLayout.setOnClickListener {
                     onClick(droplet)

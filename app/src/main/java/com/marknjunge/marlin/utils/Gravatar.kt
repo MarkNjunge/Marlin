@@ -9,6 +9,6 @@ object Gravatar {
         val hash = digested.joinToString("") {
             String.format("%02x", it)
         }
-        return "https://www.gravatar.com/avatar/$hash"
+        return "https://www.gravatar.com/avatar/$hash?s=200"
     }
 }

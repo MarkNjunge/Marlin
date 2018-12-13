@@ -5,17 +5,26 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.marknjunge.marlin.R
 import com.marknjunge.marlin.data.local.PreferencesStorage
 import com.marknjunge.marlin.data.model.AccessToken
 import com.marknjunge.marlin.data.api.service.ApiService
 import com.marknjunge.marlin.data.api.service.OauthService
+import com.marknjunge.marlin.data.model.Droplet
+import com.marknjunge.marlin.data.model.Resource
+import com.marknjunge.marlin.data.model.Status
 import com.marknjunge.marlin.data.repository.AuthRepository
 import com.marknjunge.marlin.data.repository.DataRepository
 import com.marknjunge.marlin.ui.account.AccountActivity
 import com.marknjunge.marlin.ui.droplets.DropletsActivity
+import com.marknjunge.marlin.ui.droplets.DropletsViewModel
 import com.marknjunge.marlin.ui.login.LoginActivity
+import com.marknjunge.marlin.utils.getViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,10 +39,8 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     override val kodein by closestKodein()
     private val prefs: PreferencesStorage by instance()
     private val dataRepo: DataRepository by instance()
-    private val authRepo: AuthRepository by instance()
 
-    private val uiScope = CoroutineScope(Dispatchers.Main)
-    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val viewModel by lazy { MainViewModel(dataRepo) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,21 +57,31 @@ class MainActivity : AppCompatActivity(), KodeinAware {
             Timber.d("Access token present: $accessToken")
         }
 
-        btnRefresh.setOnClickListener {
-            refreshToken()
-        }
-
-        btnLogout.setOnClickListener {
-            revokeToken()
-        }
-
-        btnTest.setOnClickListener {
-            getAccount()
-        }
-
         btnDroplets.setOnClickListener {
             startActivity(Intent(this, DropletsActivity::class.java))
         }
+
+        val adapter = DropletsPreviewAdapter {}
+        rvDroplets.layoutManager = LinearLayoutManager(this, LinearLayout.HORIZONTAL, false)
+        rvDroplets.adapter = adapter
+
+        viewModel.droplets.observe(this, Observer<Resource<List<Droplet>>> { dropletResource ->
+            when {
+                dropletResource.status == Status.LOADING -> {
+                    pbDropletsLoading.visibility = View.VISIBLE
+                }
+                dropletResource.status == Status.SUCCESS -> {
+                    pbDropletsLoading.visibility = View.GONE
+                    adapter.setItems(dropletResource.data!!)
+                }
+                dropletResource.status == Status.ERROR -> {
+                    pbDropletsLoading.visibility = View.GONE
+                    Toast.makeText(this, dropletResource.errorMessage, Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+        viewModel.getDroplets()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -78,38 +95,5 @@ class MainActivity : AppCompatActivity(), KodeinAware {
             R.id.menu_settings -> Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun refreshToken() {
-        uiScope.launch {
-            try {
-                authRepo.refreshToken()
-                Toast.makeText(this@MainActivity, "Token refreshed", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                Timber.e(e)
-            }
-        }
-    }
-
-    private fun revokeToken() {
-        ioScope.launch {
-            authRepo.revokeToken()
-            Timber.i("Token revoked")
-        }
-
-        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-        finish()
-    }
-
-    private fun getAccount() {
-        uiScope.launch {
-            try {
-                dataRepo.getAccount()
-                tvEmail.text = "Token valid"
-            } catch (e: Exception) {
-                Timber.e(e)
-                tvEmail.text = "Error: ${e.localizedMessage}"
-            }
-        }
     }
 }

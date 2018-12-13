@@ -15,7 +15,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/colorBackground</item>
         <item name="android:fontFamily">@font/ubuntu</item>
     </style>
 
@@ -61,6 +60,18 @@
     <style name="AppTheme.SecondaryButton">
         <item name="android:backgroundTint">@color/colorAccent</item>
         <item name="android:textColor">#FFFFFF</item>
+        <item name="android:layout_height">56dp</item>
+    </style>
+
+    <style name="AppTheme.WarningButton">
+        <item name="android:background">@drawable/button_warning_background</item>
+        <item name="android:textColor">@color/colorError</item>
+        <item name="android:layout_height">56dp</item>
+    </style>
+
+    <style name="AppTheme.BorderlessButton">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:layout_height">56dp</item>
     </style>
 

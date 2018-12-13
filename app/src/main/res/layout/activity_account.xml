@@ -4,46 +4,104 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.account.AccountActivity">
+    tools:context=".ui.account.AccountActivity"
+    tools:layout_editor_absoluteY="81dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imgAvatar"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="112dp"
+        android:layout_height="112dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:src="@drawable/ic_logo_blue"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@tools:sample/avatars" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvEmail"
+        style="@style/AppTheme.TextHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgAvatar"
+        tools:text="mark.kamau@outlook.com" />
+
+    <View
+        android:id="@+id/view4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:alpha=".12"
+        android:background="#000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvEmail" />
+
+    <TextView
+        android:id="@+id/textView5"
+        style="@style/AppTheme.TextHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="Account Details"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view4" />
+
+    <View
+        android:id="@+id/view5"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:alpha=".54"
+        android:background="#000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+    <TextView
+        android:id="@+id/textView2"
         style="@style/AppTheme.TextPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imgAvatar"
-        app:layout_constraintStart_toEndOf="@+id/imgAvatar"
-        app:layout_constraintTop_toTopOf="@+id/imgAvatar"
-        tools:text="mark.kamau@outlook.com" />
+        android:layout_marginTop="8dp"
+        android:text="Status"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view5" />
+
+    <TextView
+        android:id="@+id/tvStatus"
+        style="@style/AppTheme.TextPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView2"
+        tools:text="Active" />
 
     <TextView
         android:id="@+id/textView3"
         style="@style/AppTheme.TextPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Droplet limit"
-        app:layout_constraintTop_toBottomOf="@+id/imgAvatar"
-        tools:layout_editor_absoluteX="8dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <TextView
         android:id="@+id/tvDropletLimit"
-        style="@style/AppTheme.TextSecondary"
+        style="@style/AppTheme.TextPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@+id/textView3"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView3"
         tools:text="10" />
 
@@ -60,13 +118,55 @@
 
     <TextView
         android:id="@+id/tvFloatingIpLimit"
-        style="@style/AppTheme.TextSecondary"
+        style="@style/AppTheme.TextPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView6"
+        tools:text="5" />
+
+    <TextView
+        android:id="@+id/textView7"
+        style="@style/AppTheme.TextPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@+id/textView6"
-        app:layout_constraintTop_toTopOf="@+id/textView6"
-        tools:text="5" />
+        android:layout_marginTop="8dp"
+        android:text="Email verified"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+    <TextView
+        android:id="@+id/tvEmailVerified"
+        style="@style/AppTheme.TextPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView7"
+        tools:text="Yes" />
+
+    <TextView
+        android:id="@+id/textView8"
+        style="@style/AppTheme.TextPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Status message"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+    <TextView
+        android:id="@+id/tvStatusMessage"
+        style="@style/AppTheme.TextPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView8"
+        tools:text="None" />
 
     <ProgressBar
         android:id="@+id/pbLoading"
@@ -83,4 +183,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnLogout"
+        style="@style/AppTheme.WarningButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Logout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

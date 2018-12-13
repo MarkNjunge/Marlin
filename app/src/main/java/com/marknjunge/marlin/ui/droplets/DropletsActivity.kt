@@ -36,7 +36,7 @@ class DropletsActivity : AppCompatActivity(), KodeinAware {
         supportActionBar?.title = "Droplets"
 
         rvDroplets.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        val adapter = DropletsAdapter { droplet ->
+        val adapter = DropletsAdapter(this) { droplet ->
             Toast.makeText(this, droplet.name, Toast.LENGTH_SHORT).show()
         }
         rvDroplets.adapter = adapter

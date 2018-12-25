@@ -12,28 +12,19 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.marknjunge.marlin.R
 import com.marknjunge.marlin.data.local.PreferencesStorage
-import com.marknjunge.marlin.data.model.AccessToken
-import com.marknjunge.marlin.data.api.service.ApiService
-import com.marknjunge.marlin.data.api.service.OauthService
 import com.marknjunge.marlin.data.model.Droplet
 import com.marknjunge.marlin.data.model.Resource
 import com.marknjunge.marlin.data.model.Status
-import com.marknjunge.marlin.data.repository.AuthRepository
 import com.marknjunge.marlin.data.repository.DataRepository
+import com.marknjunge.marlin.ui.about.AboutActivity
 import com.marknjunge.marlin.ui.account.AccountActivity
 import com.marknjunge.marlin.ui.droplets.DropletsActivity
-import com.marknjunge.marlin.ui.droplets.DropletsViewModel
 import com.marknjunge.marlin.ui.login.LoginActivity
-import com.marknjunge.marlin.utils.getViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 import org.kodein.di.generic.instance
 import timber.log.Timber
-import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), KodeinAware {
     override val kodein by closestKodein()
@@ -92,7 +83,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_account -> startActivity(Intent(this@MainActivity, AccountActivity::class.java))
-            R.id.menu_settings -> Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
+            R.id.menu_about -> startActivity(Intent(this@MainActivity, AboutActivity::class.java))
         }
         return super.onOptionsItemSelected(item)
     }
